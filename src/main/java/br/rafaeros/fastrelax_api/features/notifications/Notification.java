@@ -1,11 +1,10 @@
 package br.rafaeros.fastrelax_api.features.notifications;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import br.rafaeros.fastrelax_api.features.collaborators.Collaborator;
@@ -25,14 +24,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Token de push de um aparelho. Um colaborador pode ter vários. */
+/**
+ * Aviso destinado a um colaborador.
+ *
+ * <p>
+ * Guardado independentemente da entrega: o push pode não chegar (aparelho
+ * desligado, permissão revogada, navegador fechado) e mesmo assim o aviso
+ * precisa aparecer quando a pessoa abrir o app.
+ */
 @Entity
-@Table(name = "device_tokens")
+@Table(name = "notifications")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class DeviceToken {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,42 +48,29 @@ public class DeviceToken {
     @JoinColumn(name = "collaborator_id", nullable = false)
     private Collaborator collaborator;
 
-    /** Token do FCM. Preenchido em ANDROID e IOS; nulo em WEB. */
-    @Column(columnDefinition = "TEXT")
-    private String token;
-
-    /**
-     * Inscrição do navegador. Preenchida em WEB; nula nas demais plataformas.
-     *
-     * <p>
-     * Web Push não entrega por token: o navegador devolve o endereço do serviço
-     * de push dele mais as chaves que cifram a mensagem. São dados demais para
-     * uma coluna de texto, e o JSONB mantém o formato igual ao que o navegador
-     * produz.
-     */
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "push_subscription", columnDefinition = "jsonb")
-    private PushSubscription pushSubscription;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Platform platform;
+    @Column(nullable = false, length = 50)
+    private NotificationType type;
 
-    @ColumnDefault("true")
-    @Column(nullable = false)
-    private boolean active = true;
+    @Column(nullable = false, length = 150)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String body;
+
+    /** Carga livre para o clique abrir a tela certa, ex.: {@code {"sessionId": 42}}. */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> data;
+
+    @Column(name = "read_at")
+    private LocalDateTime readAt;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    public enum Platform {
-        ANDROID,
-        IOS,
-        WEB
+    public boolean isRead() {
+        return readAt != null;
     }
 }
