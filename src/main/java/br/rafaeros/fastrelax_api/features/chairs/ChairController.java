@@ -152,6 +152,21 @@ public class ChairController {
                 "Status da cadeira alterado com sucesso"));
     }
 
+    /**
+     * Esquece o token pareado desta cadeira, sem apagar o cadastro. Usar depois
+     * de apagar a flash inteira do ESP32 (não um reflash comum pelo painel, que
+     * não toca a NVS) — a placa sorteia token novo no boot seguinte, e sem isto
+     * o backend continuaria recusando por divergência até alguém rodar UPDATE
+     * manual no banco.
+     */
+    @PostMapping("/{id}/reset-pairing")
+    @PreAuthorize("@access.isPlatformTeam()")
+    @Operation(summary = "Esquece o token pareado, para a cadeira parear de novo no próximo heartbeat (somente Physical)")
+    public ResponseEntity<ApiResponseDTO<ChairResponseDTO>> resetPairing(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponseDTO.success(chairService.resetPairing(id),
+                "Pareamento esquecido. A cadeira pareia de novo no próximo heartbeat."));
+    }
+
     /** Mesma razão do toggle: remover equipamento do parque é decisão da Physical. */
     @DeleteMapping("/{id}")
     @PreAuthorize("@access.isPlatformTeam()")

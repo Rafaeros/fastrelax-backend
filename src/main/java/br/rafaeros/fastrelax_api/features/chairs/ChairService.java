@@ -174,6 +174,21 @@ public class ChairService {
         return toResponse(saved);
     }
 
+    /**
+     * Esquece o token pareado, sem mexer em mais nada. Necessário sempre que o
+     * ESP32 físico troca de identidade sem a cadeira mudar de cadastro — flash
+     * apagada por completo (não um reflash comum pelo painel, que não toca a
+     * NVS) ou placa física trocada. Sem isso, o único jeito era UPDATE manual em
+     * {@code chairs.device_token_encrypted} — ver comentário em
+     * {@code ChairClient#pushPower}.
+     */
+    @Transactional
+    public ChairResponseDTO resetPairing(Long id) {
+        Chair chair = findEntityById(id);
+        chair.setDeviceTokenEncrypted(null);
+        return toResponse(chairRepository.save(chair));
+    }
+
     @Transactional
     public void softDelete(Long id) {
         Chair chair = findEntityById(id);
