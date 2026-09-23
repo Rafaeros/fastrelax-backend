@@ -13,10 +13,10 @@
 	</parent>
 
 	<groupId>br.rafaeros</groupId>
-	<artifactId>fastrelax-api</artifactId>
+	<artifactId>fastrelax-backend</artifactId>
 	<version>1.0.0</version>
 
-	<name>fastrelax-api</name>
+	<name>fastrelax-backend</name>
 
 	<properties>
 		<java.version>21</java.version>

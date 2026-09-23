@@ -6,7 +6,7 @@ const isWindows = os.platform() === 'win32';
 module.exports = {
   apps: [
     {
-      name: 'fastrelax-api',
+      name: 'fastrelax-backend',
 
       cwd: __dirname,
 
@@ -14,7 +14,7 @@ module.exports = {
 
       args: [
         '-jar',
-        'target/fastrelax-api-1.0.0.jar',
+        'target/fastrelax-backend-1.0.0.jar',
       ],
 
       interpreter: 'none',

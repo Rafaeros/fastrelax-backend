@@ -1,4 +1,4 @@
-# FastRelax API
+# FastRelax Backend
 
 Backend Spring Boot (multi-tenant) da FastRelax: cadastro de empresas/colaboradores, agendamento de sessões de massagem, controle das cadeiras (via [fastrelax-firmware](../fastrelax-firmware)) e consumo pelo [fastrelax-web](../fastrelax-web).
 
