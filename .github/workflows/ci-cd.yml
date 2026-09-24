@@ -103,27 +103,27 @@ jobs:
             # 1. Puxa a nova imagem
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastrelax-api:latest
 
-            # 2. Para e remove o container em execução (se existir)
+            # 2. Para e remove o container em execução
             docker stop backend || true
             docker rm backend || true
 
-            # 3. Sobe o container conectado na rede 'fastrelax-network'
+            # 3. Sobe o container blindado com aspas
             docker run -d \
               --name backend \
               --restart unless-stopped \
               --network fastrelax-network \
               -p 8090:8090 \
-              -e DB_URL=jdbc:postgresql://db:5432/${{ secrets.POSTGRES_DB }} \
-              -e DB_USER=${{ secrets.POSTGRES_USER }} \
-              -e DB_PASS=${{ secrets.POSTGRES_PASSWORD }} \
-              -e MQTT_HOST=rabbitmq \
-              -e RABBITMQ_AMQP_PORT=5672 \
-              -e MQTT_DEVICE_PORT=1883 \
-              -e MQTT_USERNAME=${{ secrets.MQTT_USERNAME }} \
-              -e MQTT_PASSWORD=${{ secrets.MQTT_PASSWORD }} \
-              -e MQTT_ENABLED=true \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e AES_SECRET=${{ secrets.AES_SECRET }} \
+              -e DB_URL="jdbc:postgresql://db:5432/${{ secrets.POSTGRES_DB }}" \
+              -e DB_USER="${{ secrets.POSTGRES_USER }}" \
+              -e DB_PASS="${{ secrets.POSTGRES_PASSWORD }}" \
+              -e MQTT_HOST="rabbitmq" \
+              -e RABBITMQ_AMQP_PORT="5672" \
+              -e MQTT_DEVICE_PORT="1883" \
+              -e MQTT_USERNAME="${{ secrets.MQTT_USERNAME }}" \
+              -e MQTT_PASSWORD="${{ secrets.MQTT_PASSWORD }}" \
+              -e MQTT_ENABLED="true" \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e AES_SECRET="${{ secrets.AES_SECRET }}" \
               -e CORS_ALLOWED_ORIGINS="${{ secrets.CORS_ALLOWED_ORIGINS }}" \
               -e WEB_BASE_URL="http://${{ secrets.DO_HOST }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/fastrelax-api:latest
