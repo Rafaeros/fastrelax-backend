@@ -9,18 +9,18 @@ on:
       - main
 
 jobs:
-  # 1. Executa os testes unitários
+  # 1. Executa os testes unitários e de integração
   test:
     runs-on: ubuntu-latest
-    
-    # Sobe o banco temporário para os testes de integração do Spring
+
+    # Sobe o Postgres com as credenciais padrão esperadas pelo TestDatabaseConfig
     services:
       postgres:
         image: postgres:16-alpine
         env:
           POSTGRES_DB: fastrelax_test
-          POSTGRES_USER: fastrelax
-          POSTGRES_PASSWORD: password_test_123
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
@@ -28,6 +28,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,21 +36,27 @@ jobs:
       - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
 
       - name: Tornar Maven Wrapper executável
         run: chmod +x mvnw
 
       - name: Executar Testes
-        # Define variáveis dummy caso seus testes de unidade subam o Spring Context
         run: ./mvnw -B test
         env:
+          # Configurações para os testes baterem no banco local do step services
+          DB_URL: jdbc:postgresql://localhost:5432/fastrelax_test
+          DB_USER: postgres
+          DB_PASS: postgres
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/fastrelax_test
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
           JWT_SECRET: "chave_temporaria_apenas_para_testes_ci_cd_123456789"
           AES_SECRET: "chave_temporaria_aes_1234567890123"
 
-  # 2. Build e Push da Imagem Docker
+  # 2. Build e Push da Imagem Docker (apenas no push da branch main)
   build-and-push:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -96,11 +103,11 @@ jobs:
             # 1. Puxa a nova imagem
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastrelax-api:latest
 
-            # 2. Para e remove o container em execução
+            # 2. Para e remove o container em execução (se existir)
             docker stop backend || true
             docker rm backend || true
 
-            # 3. Sobe o container com as variáveis alinhadas ao application.properties
+            # 3. Sobe o container conectado na rede 'fastrelax-network'
             docker run -d \
               --name backend \
               --restart unless-stopped \
@@ -121,5 +128,5 @@ jobs:
               -e WEB_BASE_URL="http://${{ secrets.DO_HOST }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/fastrelax-api:latest
 
-            # 4. Limpa imagens dangling
+            # 4. Limpa imagens sem uso
             docker image prune -f
