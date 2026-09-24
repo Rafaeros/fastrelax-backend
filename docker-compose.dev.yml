@@ -1,0 +1,85 @@
+name: fastrelax-dev
+
+services:
+  # 1. Banco de Dados PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: fastrelax-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fastrelax}
+      POSTGRES_USER: ${POSTGRES_USER:-fastrelax}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fastrelax123}
+    volumes:
+      - fastrelax-db-dev-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # Aberto para DBeaver / DataGrip
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fastrelax}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fastrelax-network
+
+  # 2. Broker RabbitMQ com plugin MQTT ativo
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: fastrelax-rabbitmq-dev
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MQTT_USERNAME:-fastrelax}
+      RABBITMQ_DEFAULT_PASS: ${MQTT_PASSWORD:-fastrelax123}
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - fastrelax-rabbitmq-dev-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"   # AMQP (Spring Boot local fala aqui)
+      - "1883:1883"   # MQTT (ESP32 de teste fala aqui)
+      - "15672:15672" # Painel Web (http://localhost:15672)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fastrelax-network
+
+  # 3. Backend Spring Boot (Opcional se for rodar direto pela IDE/mvnw)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastrelax-backend-dev
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-fastrelax}
+      DB_USER: ${POSTGRES_USER:-fastrelax}
+      DB_PASS: ${POSTGRES_PASSWORD:-fastrelax123}
+      MQTT_HOST: rabbitmq
+      RABBITMQ_AMQP_PORT: 5672
+      MQTT_DEVICE_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-fastrelax}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-fastrelax123}
+      MQTT_ENABLED: "true"
+      JWT_SECRET: ${JWT_SECRET:-chave_temporaria_dev_com_mais_de_256_bits_123456}
+      AES_SECRET: ${AES_SECRET:-1234567890123456}
+      CORS_ALLOWED_ORIGINS: "*"
+      WEB_BASE_URL: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+    networks:
+      - fastrelax-network
+
+volumes:
+  fastrelax-db-dev-data:
+  fastrelax-rabbitmq-dev-data:
+
+networks:
+  fastrelax-network:
+    name: fastrelax-network

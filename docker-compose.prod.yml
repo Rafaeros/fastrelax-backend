@@ -1,0 +1,50 @@
+name: fastrelax-infra
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fastrelax}
+      POSTGRES_USER: ${POSTGRES_USER:-fastrelax}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - fastrelax-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fastrelax}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - fastrelax-network
+    # Porta 5432 mantida fora de 'ports' para isolamento da internet
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MQTT_USERNAME:?defina MQTT_USERNAME no .env}
+      RABBITMQ_DEFAULT_PASS: ${MQTT_PASSWORD:?defina MQTT_PASSWORD no .env}
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - fastrelax-rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "1883:1883"   # MQTT aberto externamente para o ESP32 conectar
+      # - "15672:15672" # Descomente se precisar acessar o painel do RabbitMQ via IP
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - fastrelax-network
+
+volumes:
+  fastrelax-db-data:
+  fastrelax-rabbitmq-data:
+
+networks:
+  fastrelax-network:
+    name: fastrelax-network
