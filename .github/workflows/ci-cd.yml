@@ -125,7 +125,7 @@ jobs:
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e AES_SECRET="${{ secrets.AES_SECRET }}" \
               -e CORS_ALLOWED_ORIGINS="${{ secrets.CORS_ALLOWED_ORIGINS }}" \
-              -e WEB_BASE_URL="http://${{ secrets.DO_HOST }}" \
+              -e WEB_BASE_URL="${{ secrets.WEB_BASE_URL }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/fastrelax-api:latest
 
             # 4. Limpa imagens sem uso
