@@ -1,6 +1,8 @@
 package br.rafaeros.fastrelax_api.features.collaborators;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,8 @@ import br.rafaeros.fastrelax_api.core.security.Principals;
 import br.rafaeros.fastrelax_api.core.tenancy.CurrentTenant;
 import br.rafaeros.fastrelax_api.core.util.CpfUtils;
 import br.rafaeros.fastrelax_api.core.util.PhoneUtils;
+import br.rafaeros.fastrelax_api.features.audit.AuditLogService;
+import br.rafaeros.fastrelax_api.features.billing.CollaboratorQuotaService;
 import br.rafaeros.fastrelax_api.features.auth.RefreshToken;
 import br.rafaeros.fastrelax_api.features.auth.RefreshTokenService;
 import br.rafaeros.fastrelax_api.features.collaborators.dtos.CollaboratorFilterDTO;
@@ -41,6 +45,8 @@ public class CollaboratorService {
     private final CredentialProvisioningService provisioningService;
     private final RefreshTokenService refreshTokenService;
     private final CurrentTenant currentTenant;
+    private final AuditLogService auditLogService;
+    private final CollaboratorQuotaService quotaService;
 
     public Page<CollaboratorResponseDTO> findAll(CollaboratorFilterDTO dto,
             @org.springframework.lang.NonNull Pageable pageable) {
@@ -82,6 +88,10 @@ public class CollaboratorService {
     @Transactional
     public CollaboratorResponseDTO toggleActive(Long id) {
         Collaborator collaborator = findEntityById(id);
+        if (!collaborator.isActive()) {
+            // Reativar ocupa uma vaga do plano, como um cadastro novo.
+            quotaService.requireRoomFor(collaborator.getCompany().getId(), 1);
+        }
         collaborator.setActive(!collaborator.isActive());
         // Desativar tem que cortar as sessões abertas: sem revogar o refresh token,
         // o app continuaria renovando o acesso indefinidamente.
@@ -124,6 +134,9 @@ public class CollaboratorService {
                     return created;
                 });
 
+        // Novo ou removido que volta: os dois passam a ocupar uma vaga do plano.
+        quotaService.requireRoomFor(currentTenant.companyId(), 1);
+
         collaborator.setDepartment(findDepartment(dto.departmentId()));
         collaborator.setName(dto.name());
         applyPhone(collaborator, dto.phoneNumber());
@@ -164,6 +177,9 @@ public class CollaboratorService {
     public CollaboratorResponseDTO update(Long id, UpdateCollaboratorDTO dto) {
         Collaborator collaborator = findEntityById(id);
         Objects.requireNonNull(dto);
+        if (dto.active() && !collaborator.isActive()) {
+            quotaService.requireRoomFor(collaborator.getCompany().getId(), 1);
+        }
 
         collaborator.setDepartment(findDepartment(dto.departmentId()));
         collaborator.setName(dto.name());
@@ -222,6 +238,32 @@ public class CollaboratorService {
         collaborator.markDeleted();
         collaboratorRepository.save(collaborator);
         refreshTokenService.revokeAllFor(RefreshToken.SubjectType.COLLABORATOR, collaborator.getId());
+    }
+
+    /**
+     * Anonimização LGPD a pedido do controlador: apaga irreversivelmente os
+     * dados pessoais (nome, CPF, e-mail, telefone) e remove o colaborador das
+     * listagens operacionais, mantendo as sessões e avaliações como estatística
+     * histórica agregada da empresa.
+     */
+    @Transactional
+    public void anonymize(Long id) {
+        Collaborator collaborator = findEntityById(id);
+        Long companyId = collaborator.companyId();
+        String anonMarker = "anon:" + collaborator.getId() + ":" + UUID.randomUUID();
+
+        collaborator.setName("Colaborador Anonimizado #" + collaborator.getId());
+        collaborator.setCpfEncrypted(cryptoService.encrypt("00000000000"));
+        collaborator.setCpfHash(cryptoService.blindIndex(anonMarker));
+        collaborator.setEmail(null);
+        collaborator.setPhoneNumber(null);
+        collaborator.setAnonymizedAt(LocalDateTime.now());
+        collaborator.markDeleted();
+        collaboratorRepository.save(collaborator);
+
+        refreshTokenService.revokeAllFor(RefreshToken.SubjectType.COLLABORATOR, collaborator.getId());
+        auditLogService.record(companyId, "COLLABORATOR_ANONYMIZED", "COLLABORATOR", collaborator.getId(),
+                "Solicitação LGPD do controlador", "Dados pessoais anonimizados; sessões mantidas como estatística.");
     }
 
     /** Escopada: um id de outra empresa responde 404, como se não existisse. */

@@ -46,7 +46,7 @@ public class AuthService {
      */
     private static final String COLLABORATOR_DISABLED = "Seu acesso está desativado. Fale com o RH da sua empresa para reativá-lo.";
 
-    private static final String COMPANY_DISABLED = "O acesso da sua empresa está suspenso. Fale com o RH da sua empresa.";
+    private static final String COMPANY_DISABLED = "O app está indisponível para a sua empresa no momento. Fale com o RH da sua empresa.";
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;

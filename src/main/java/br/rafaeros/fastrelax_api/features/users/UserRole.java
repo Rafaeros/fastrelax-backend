@@ -18,7 +18,8 @@ public enum UserRole {
 
     SYSADMIN("Administrador da plataforma"),
     COMPANY_ADMIN("Gestor da empresa"),
-    COMPANY_RH("RH da empresa");
+    COMPANY_RH("RH da empresa"),
+    COMPANY_OPERATOR("Operador da cadeira");
 
     private final String label;
 

@@ -1,5 +1,6 @@
 package br.rafaeros.fastrelax_api.features.collaborators;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -92,6 +93,13 @@ public class Collaborator extends SoftDeletableCompanyEntity
      */
     @Column(name = "must_change_password", nullable = false)
     private boolean mustChangePassword = true;
+
+    @Column(name = "anonymized_at")
+    private LocalDateTime anonymizedAt;
+
+    public boolean isAnonymized() {
+        return anonymizedAt != null;
+    }
 
     @Override
     public Long tenantCompanyId() {

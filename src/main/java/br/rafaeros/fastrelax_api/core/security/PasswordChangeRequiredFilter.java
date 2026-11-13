@@ -68,7 +68,6 @@ public class PasswordChangeRequiredFilter extends OncePerRequestFilter {
     /** O path do servlet já vem sem o context-path, então basta comparar direto. */
     private boolean isAllowed(HttpServletRequest request) {
         String path = request.getServletPath();
-        return ALLOWED_PATHS.contains(path) || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs");
+        return ALLOWED_PATHS.contains(path);
     }
 }

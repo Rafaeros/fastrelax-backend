@@ -10,8 +10,10 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.rafaeros.fastrelax_api.core.tenancy.CurrentTenant;
 import br.rafaeros.fastrelax_api.core.tenancy.TenantSpecifications;
 import br.rafaeros.fastrelax_api.core.crypto.CryptoService;
+import br.rafaeros.fastrelax_api.features.audit.AuditLogService;
 import br.rafaeros.fastrelax_api.features.collaborators.Collaborator;
 import br.rafaeros.fastrelax_api.features.collaborators.CollaboratorRepository;
 import br.rafaeros.fastrelax_api.features.collaborators.CollaboratorWorkSchedule;
@@ -39,12 +41,14 @@ public class CollaboratorExportService {
     private final CollaboratorRepository collaboratorRepository;
     private final CollaboratorWorkScheduleRepository scheduleRepository;
     private final CryptoService cryptoService;
+    private final AuditLogService auditLogService;
+    private final CurrentTenant currentTenant;
 
     /**
      * @param onlyActive true exporta só os colaboradores ativos
      * @return planilha .xlsx; sempre com o cabeçalho, mesmo sem nenhuma linha
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public byte[] export(boolean onlyActive) {
         // Escopado: a planilha carrega CPF de todo mundo, e sem o filtro de empresa
         // um cliente exportaria o quadro de pessoal dos outros.
@@ -53,6 +57,10 @@ public class CollaboratorExportService {
                 .sorted(Comparator.comparing((Collaborator collaborator) -> collaborator.getName(),
                         String.CASE_INSENSITIVE_ORDER))
                 .toList();
+
+        auditLogService.record(currentTenant.companyId(), "COLLABORATORS_EXPORTED", "COMPANY",
+                currentTenant.companyId(), "Exportação de dados pelo controlador (LGPD)",
+                "Exportados " + collaborators.size() + " colaboradores (onlyActive=" + onlyActive + ")");
 
         // Uma consulta para todos os horários, em vez de uma por colaborador.
         Map<Long, List<CollaboratorWorkSchedule>> schedulesByCollaborator = new HashMap<>();

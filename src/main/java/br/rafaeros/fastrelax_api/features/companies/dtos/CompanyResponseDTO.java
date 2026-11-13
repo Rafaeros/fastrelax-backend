@@ -2,7 +2,9 @@ package br.rafaeros.fastrelax_api.features.companies.dtos;
 
 import java.time.LocalDateTime;
 
+import br.rafaeros.fastrelax_api.features.companies.BillingStatus;
 import br.rafaeros.fastrelax_api.features.companies.Company;
+import br.rafaeros.fastrelax_api.features.companies.CompanyType;
 import br.rafaeros.fastrelax_api.features.locations.Address;
 
 public record CompanyResponseDTO(
@@ -14,6 +16,11 @@ public record CompanyResponseDTO(
     String email,
     String phone,
     boolean active,
+    CompanyType type,
+    String typeLabel,
+    BillingStatus billingStatus,
+    String billingStatusLabel,
+    LocalDateTime graceUntil,
     Long addressId,
     String cep,
     String street,
@@ -51,6 +58,11 @@ public record CompanyResponseDTO(
     public CompanyResponseDTO(Company entity, boolean revealWifiSsid) {
         this(entity.getId(), entity.getCnpj(), entity.getSlug(), entity.getName(), entity.getEmail(), entity.getPhone(),
                 entity.isActive(),
+                entity.getType(),
+                entity.getType() != null ? entity.getType().getLabel() : null,
+                entity.getBillingStatus(),
+                entity.getBillingStatus() != null ? entity.getBillingStatus().getLabel() : null,
+                entity.getGraceUntil(),
                 id(entity.getAddress()),
                 entity.getAddress() != null ? entity.getAddress().getCep() : null,
                 entity.getAddress() != null ? entity.getAddress().getStreet() : null,

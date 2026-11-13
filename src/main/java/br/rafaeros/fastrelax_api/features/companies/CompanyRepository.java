@@ -1,5 +1,7 @@
 package br.rafaeros.fastrelax_api.features.companies;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +22,10 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpec
     Optional<Company> findBySlug(String slug);
 
     boolean existsBySlug(String slug);
+
+    Optional<Company> findByGatewayCustomerId(String gatewayCustomerId);
+
+    List<Company> findByBillingStatusAndGraceUntilBefore(BillingStatus billingStatus, LocalDateTime cutoff);
 
     /**
      * Enxerga também as empresas removidas.

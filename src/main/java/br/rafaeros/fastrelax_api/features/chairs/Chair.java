@@ -168,6 +168,21 @@ public class Chair extends SoftDeletableCompanyEntity {
     }
 
     /**
+     * Regra de bloqueio única de uso operacional da cadeira (agenda e sessões).
+     *
+     * <p>
+     * Não substitui {@link #isActive()} na resposta do heartbeat ao ESP32:
+     * suspender por cobrança ({@code BillingStatus.SUSPENDED}) bloqueia o
+     * software, mas nunca aciona o relé de corte de energia do painel físico.
+     */
+    public boolean canUse() {
+        return isActive()
+                && !isDeleted()
+                && getCompany() != null
+                && getCompany().isOperational();
+    }
+
+    /**
      * Online enquanto o último heartbeat estiver dentro da janela tolerada. Sem
      * IP conhecido não há como comandar, então também conta como offline.
      */

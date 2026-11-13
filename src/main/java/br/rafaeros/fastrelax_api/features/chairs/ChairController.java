@@ -31,6 +31,7 @@ import br.rafaeros.fastrelax_api.features.chairs.dtos.ChairResponseDTO;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.CreateChairRequestDTO;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.RenameChairRequestDTO;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.SaveChairRequestDTO;
+import br.rafaeros.fastrelax_api.features.chairs.dtos.ToggleChairActiveRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -146,9 +147,15 @@ public class ChairController {
      */
     @PatchMapping("/{id}/toggle-active")
     @PreAuthorize("@access.isPlatformTeam()")
-    @Operation(summary = "Ativa ou desativa uma cadeira (somente Physical)")
-    public ResponseEntity<ApiResponseDTO<ChairResponseDTO>> toggleActive(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponseDTO.success(chairService.toggleActive(id),
+    @Operation(summary = "Ativa ou desativa uma cadeira com motivo registrado no audit_log (somente Physical)")
+    public ResponseEntity<ApiResponseDTO<ChairResponseDTO>> toggleActive(
+            @PathVariable Long id,
+            @RequestParam(name = "reason", required = false) String reasonParam,
+            @RequestBody(required = false) @Valid ToggleChairActiveRequestDTO body) {
+        String reason = (body != null && body.reason() != null && !body.reason().isBlank())
+                ? body.reason()
+                : reasonParam;
+        return ResponseEntity.ok(ApiResponseDTO.success(chairService.toggleActive(id, reason),
                 "Status da cadeira alterado com sucesso"));
     }
 

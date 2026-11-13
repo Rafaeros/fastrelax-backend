@@ -16,6 +16,7 @@ import br.rafaeros.fastrelax_api.core.exceptions.BusinessException;
 import br.rafaeros.fastrelax_api.core.exceptions.DeviceUnauthorizedException;
 import br.rafaeros.fastrelax_api.core.exceptions.ResourceNotFoundException;
 import br.rafaeros.fastrelax_api.core.tenancy.CurrentTenant;
+import br.rafaeros.fastrelax_api.features.audit.AuditLogService;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.ChairFilterDTO;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.ChairHeartbeatRequestDTO;
 import br.rafaeros.fastrelax_api.features.chairs.dtos.ChairResponseDTO;
@@ -39,6 +40,7 @@ public class ChairService {
     private final ChairClient chairClient;
     private final ApplicationEventPublisher eventPublisher;
     private final CryptoService cryptoService;
+    private final AuditLogService auditLogService;
 
     @Value("${app.chair.offline-after-seconds:180}")
     private int offlineAfterSeconds;
@@ -157,12 +159,27 @@ public class ChairService {
      * Ativa/desativa e propaga aos dois lados que precisam saber: o ESP32 (relé
      * de corte de energia do painel) e, se for uma desativação, a sessão em
      * andamento naquela cadeira.
+     *
+     * <p>
+     * Restrito ao SYSADMIN, com motivo registrado no {@code audit_log} (ex.:
+     * manutenção ou risco elétrico). Suspensão financeira nunca passa por aqui.
      */
     @Transactional
-    public ChairResponseDTO toggleActive(Long id) {
+    public ChairResponseDTO toggleActive(Long id, String reason) {
         Chair chair = findEntityById(id);
         chair.setActive(!chair.isActive());
         Chair saved = chairRepository.save(chair);
+
+        String normalizedReason = (reason != null && !reason.isBlank()) ? reason.trim()
+                : (saved.isActive() ? "Reativação técnica pelo painel Physical" : "Desativação técnica pelo painel Physical");
+        auditLogService.record(
+                saved.companyId(),
+                saved.isActive() ? "CHAIR_ACTIVATED" : "CHAIR_DEACTIVATED",
+                "CHAIR",
+                saved.getId(),
+                normalizedReason,
+                "Cadeira " + saved.getName() + " (" + saved.getMacAddress() + ") "
+                        + (saved.isActive() ? "ativada (painel energizado)" : "desativada (painel cortado via relé NC)"));
 
         // Best-effort: offline agora, o próximo heartbeat reconcilia sozinho
         // (o ESP32 lê o mesmo `active` na resposta). O toggle no banco já vale
@@ -338,6 +355,7 @@ public class ChairService {
 
     private List<Chair> onlineChairs() {
         return chairRepository.findByCompanyIdAndActiveTrue(currentTenant.companyId()).stream()
+                .filter(Chair::canUse)
                 .filter(chair -> chair.isOnline(offlineAfterSeconds))
                 .toList();
     }

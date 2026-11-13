@@ -24,6 +24,7 @@ import br.rafaeros.fastrelax_api.core.security.CredentialProvisioning;
 import br.rafaeros.fastrelax_api.core.security.CredentialProvisioningService;
 import br.rafaeros.fastrelax_api.core.tenancy.CurrentTenant;
 import br.rafaeros.fastrelax_api.core.exceptions.BusinessException;
+import br.rafaeros.fastrelax_api.features.billing.CollaboratorQuotaService;
 import br.rafaeros.fastrelax_api.core.util.CpfUtils;
 import br.rafaeros.fastrelax_api.core.util.PhoneUtils;
 import br.rafaeros.fastrelax_api.features.collaborators.Collaborator;
@@ -75,6 +76,7 @@ public class CollaboratorImportService {
     private final CryptoService cryptoService;
     private final CredentialProvisioningService provisioningService;
     private final CurrentTenant currentTenant;
+    private final CollaboratorQuotaService quotaService;
 
     @Transactional
     public ImportResultDTO importFrom(MultipartFile file) {
@@ -205,6 +207,18 @@ public class CollaboratorImportService {
         return new DepartmentOutcome(created, true);
     }
 
+    /**
+     * Vaga no plano para mais um ativo. A recusa vira erro desta linha (o
+     * {@code BusinessException} é lançado aqui, fora do proxy transacional do
+     * serviço de cota, e a planilha segue com as demais linhas).
+     */
+    private void requireRoom() {
+        String refusal = quotaService.checkRoomFor(currentTenant.companyId(), 1);
+        if (refusal != null) {
+            throw new BusinessException(refusal);
+        }
+    }
+
     /** Identidade é o CPF: mesmo CPF atualiza, CPF novo cria. */
     private CollaboratorOutcome upsertCollaborator(String name, String cpf, String phone, String email,
             Department department) {
@@ -227,12 +241,14 @@ public class CollaboratorImportService {
 
             // Quem foi removido e voltou recebe credencial nova: a antiga já
             // circulou fora do sistema, e o acesso dela foi encerrado uma vez.
+            requireRoom();
             existing.restore();
             provisioningService.initialize(existing);
             Collaborator reactivated = collaboratorRepository.save(existing);
             return new CollaboratorOutcome(reactivated, false, provisioningService.provision(reactivated));
         }
 
+        requireRoom();
         Collaborator created = new Collaborator();
         created.setCompany(currentTenant.reference());
         created.setName(name);

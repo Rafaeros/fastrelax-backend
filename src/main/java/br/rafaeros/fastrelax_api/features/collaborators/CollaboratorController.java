@@ -103,6 +103,15 @@ public class CollaboratorController {
         return ResponseEntity.ok(ApiResponseDTO.success("Colaborador deletado com sucesso"));
     }
 
+    @PostMapping("/{id}/anonymize")
+    @PreAuthorize("@access.operatesCompany()")
+    @Operation(summary = "Anonimiza irreversivelmente os dados pessoais do colaborador (LGPD), preservando estatísticas de sessões")
+    public ResponseEntity<ApiResponseDTO<Void>> anonymize(@PathVariable Long id) {
+        collaboratorService.anonymize(id);
+        return ResponseEntity.ok(ApiResponseDTO.success(
+                "Dados pessoais do colaborador anonimizados com sucesso conforme a LGPD"));
+    }
+
     /**
      * Primeiro acesso do colaborador. Uma das poucas rotas liberadas enquanto
      * {@code mustChangePassword} bloqueia o resto da API — sem ela não haveria

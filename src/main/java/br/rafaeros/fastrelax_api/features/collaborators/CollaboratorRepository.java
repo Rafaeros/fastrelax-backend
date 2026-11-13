@@ -44,4 +44,6 @@ public interface CollaboratorRepository extends CompanyScopedRepository<Collabor
             nativeQuery = true)
     Optional<Collaborator> findByCpfHashIncludingDeleted(@Param("companyId") Long companyId,
             @Param("cpfHash") String cpfHash);
+
+    long countByCompanyIdAndActiveTrue(Long companyId);
 }

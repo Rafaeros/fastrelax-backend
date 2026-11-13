@@ -27,6 +27,7 @@ public class SecurityConfig {
     private final SecurityFilter securityFilter;
     private final TenantContextFilter tenantContextFilter;
     private final PasswordChangeRequiredFilter passwordChangeRequiredFilter;
+    private final BillingSuspensionFilter billingSuspensionFilter;
     private final UrlBasedCorsConfigurationSource corsConfigurationSource;
 
     @Bean
@@ -44,9 +45,12 @@ public class SecurityConfig {
                 // exigir autenticação seria contraditório. O limite de tentativas
                 // por IP é o que segura o abuso.
                 .requestMatchers("/auth/password/**").permitAll()
-                // Documentação e healthcheck ficam abertos; as demais rotas do
-                // actuator continuam exigindo autenticação.
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                // Webhooks de pagamento (Asaas): autenticados pelo segredo de
+                // cabeçalho e reconfirmados na API do provedor.
+                .requestMatchers(HttpMethod.POST, "/billing/webhooks/**").permitAll()
+                // Documentação restrita à equipe da plataforma (SYSADMIN);
+                // healthcheck continua aberto para monitoramento.
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").hasRole("SYSADMIN")
                 .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
                 // O Spring Security 6 volta a securizar o forward interno para /error
                 // (mudou do 5.x). Sem isto, uma negativa de acesso na requisição
@@ -80,9 +84,11 @@ public class SecurityConfig {
             // Depois do SecurityFilter, que é quem coloca o principal no contexto:
             // é dele que sai a empresa da requisição.
             .addFilterAfter(tenantContextFilter, SecurityFilter.class)
-            // Por último: precisa do usuário já autenticado para saber se ele ainda
-            // está com a senha temporária.
+            // Precisa do usuário já autenticado para saber se ele ainda está com a
+            // senha temporária.
             .addFilterAfter(passwordChangeRequiredFilter, TenantContextFilter.class)
+            // Em SUSPENDED por inadimplência, restringe o gestor a faturas e exportação.
+            .addFilterAfter(billingSuspensionFilter, PasswordChangeRequiredFilter.class)
             .build();
     }
 

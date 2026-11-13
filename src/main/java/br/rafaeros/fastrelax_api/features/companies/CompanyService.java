@@ -14,6 +14,7 @@ import br.rafaeros.fastrelax_api.core.tenancy.CurrentTenant;
 import br.rafaeros.fastrelax_api.core.util.CnpjUtils;
 import br.rafaeros.fastrelax_api.core.util.PhoneUtils;
 import br.rafaeros.fastrelax_api.core.util.SlugUtils;
+import br.rafaeros.fastrelax_api.features.audit.AuditLogService;
 import br.rafaeros.fastrelax_api.features.companies.dtos.CompanyResponseDTO;
 import br.rafaeros.fastrelax_api.features.companies.dtos.SaveAddressRequestDTO;
 import br.rafaeros.fastrelax_api.features.companies.dtos.SaveCompanyRequestDTO;
@@ -42,6 +43,7 @@ public class CompanyService {
     private final SessionSettingsRepository settingsRepository;
     private final CryptoService cryptoService;
     private final CurrentTenant currentTenant;
+    private final AuditLogService auditLogService;
 
     /** Listagem da Physical: sem o SSID, que é autoatendimento da empresa. */
     public Page<CompanyResponseDTO> findAll(@org.springframework.lang.NonNull Pageable pageable) {
@@ -176,7 +178,15 @@ public class CompanyService {
     public CompanyResponseDTO toggleActive(Long id) {
         Company company = findEntityById(id);
         company.setActive(!company.isActive());
-        return new CompanyResponseDTO(companyRepository.save(company), false);
+        Company saved = companyRepository.save(company);
+        auditLogService.record(
+                saved.getId(),
+                saved.isActive() ? "COMPANY_REACTIVATED_MANUAL" : "COMPANY_SUSPENDED_MANUAL",
+                "COMPANY",
+                saved.getId(),
+                saved.isActive() ? "Reativação manual de contrato" : "Suspensão manual de contrato",
+                "Empresa " + saved.getName() + " (" + saved.getCnpj() + ")");
+        return new CompanyResponseDTO(saved, false);
     }
 
     @Transactional

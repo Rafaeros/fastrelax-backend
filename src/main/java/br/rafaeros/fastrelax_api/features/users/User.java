@@ -131,13 +131,27 @@ public class User implements UserDetails, TenantPrincipal, CredentialHolder {
     }
 
     /**
-     * Empresa suspensa derruba quem trabalha nela: sem esta checagem, o gestor de
-     * um contrato encerrado continuaria operando o painel até o token expirar.
+     * Empresa fora de operação derruba quem trabalha nela: sem esta checagem, o
+     * operador de um contrato suspenso continuaria usando o painel até o token
+     * expirar.
+     *
+     * <p>
+     * Gestor ({@link UserRole#COMPANY_ADMIN}) e RH ({@link UserRole#COMPANY_RH})
+     * são a exceção: são eles que assinam e pagam, então entram mesmo sem plano
+     * em dia, com o alcance restrito à cobrança e à exportação de dados pelo
+     * {@code BillingSuspensionFilter}.
      */
     @Override
     public boolean isEnabled() {
-        return active
-                && deletedAt == null
-                && (company == null || company.isEnabled());
+        if (!active || deletedAt != null) {
+            return false;
+        }
+        if (company == null) {
+            return true;
+        }
+        if (role == UserRole.COMPANY_ADMIN || role == UserRole.COMPANY_RH) {
+            return company.isPanelAccessEnabled();
+        }
+        return company.isEnabled();
     }
 }

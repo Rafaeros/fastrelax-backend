@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import br.rafaeros.fastrelax_api.features.locations.Address;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -114,6 +116,29 @@ public class Company {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'CORPORATE'")
+    @Column(name = "type", nullable = false, length = 20)
+    private CompanyType type = CompanyType.CORPORATE;
+
+    @Enumerated(EnumType.STRING)
+    /**
+     * Empresa nova nasce {@link BillingStatus#PENDING}: só passa a operar quando
+     * o primeiro pagamento do plano é confirmado. Operador pay-per-use não tem
+     * plano e é liberado no cadastro ({@code CompanyService}).
+     */
+    @ColumnDefault("'PENDING'")
+    @Column(name = "billing_status", nullable = false, length = 20)
+    private BillingStatus billingStatus = BillingStatus.PENDING;
+
+    /** Fim da janela de carência quando {@link #billingStatus} é {@link BillingStatus#PAST_DUE}. */
+    @Column(name = "grace_until")
+    private LocalDateTime graceUntil;
+
+    /** Identificador do cliente no gateway de pagamento (ex.: Asaas). */
+    @Column(name = "gateway_customer_id", length = 100)
+    private String gatewayCustomerId;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -125,7 +150,34 @@ public class Company {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public boolean isEnabled() {
+    /**
+     * Operação plena (colaboradores, agendamentos e acionamento de cadeiras):
+     * exige empresa ativa e plano em dia ou dentro dos dias de carência.
+     */
+    public boolean isOperational() {
+        return isPanelAccessEnabled() && billingStatus != null && billingStatus.allowsOperation();
+    }
+
+    /**
+     * Se gestor e RH podem autenticar no painel.
+     *
+     * <p>
+     * Vale para qualquer situação de cobrança — sem plano, suspensa ou
+     * cancelada —, porque são eles que escolhem o plano e pagam; fora da
+     * operação plena o {@code BillingSuspensionFilter} restringe o alcance às
+     * rotas de cobrança e exportação. Só o bloqueio administrativo
+     * ({@code active = false}) ou a exclusão derrubam o painel.
+     */
+    public boolean isPanelAccessEnabled() {
         return active && deletedAt == null;
+    }
+
+    /** Fora da operação plena por motivo financeiro (sem plano, suspensa ou cancelada). */
+    public boolean isBillingRestricted() {
+        return isPanelAccessEnabled() && (billingStatus == null || !billingStatus.allowsOperation());
+    }
+
+    public boolean isEnabled() {
+        return isOperational();
     }
 }
