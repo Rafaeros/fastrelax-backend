@@ -1,0 +1,19 @@
+info:
+  name: Anonimizar Dados Pessoais (LGPD)
+  type: http
+  seq: 13
+
+http:
+  method: POST
+  url: "{{baseUrl}}/collaborators/{{collaboratorId}}/anonymize"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Anonimiza de forma irreversível nome, CPF, telefone, e-mail e credenciais do colaborador desligado, preservando sessões e avaliações para fins estatísticos e registrando o evento em `audit_logs`.

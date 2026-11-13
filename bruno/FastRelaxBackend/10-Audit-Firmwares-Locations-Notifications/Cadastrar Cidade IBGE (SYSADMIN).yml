@@ -1,0 +1,35 @@
+info:
+  name: Cadastrar Cidade IBGE (SYSADMIN)
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/locations/states/{{stateId}}/cities"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "São Paulo",
+        "ibgeCode": "3550308"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("cityId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cadastra um município pelo código IBGE de 7 dígitos (`SYSADMIN`).

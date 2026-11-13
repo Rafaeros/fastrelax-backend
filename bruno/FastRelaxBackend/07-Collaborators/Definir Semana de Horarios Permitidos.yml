@@ -1,0 +1,31 @@
+info:
+  name: Definir Semana de Horários Permitidos
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/collaborators/{{collaboratorId}}/schedules"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "schedules": [
+          { "dayOfWeek": "MONDAY", "allowedStartTime": "08:00", "allowedEndTime": "18:00" },
+          { "dayOfWeek": "TUESDAY", "allowedStartTime": "08:00", "allowedEndTime": "18:00" },
+          { "dayOfWeek": "WEDNESDAY", "allowedStartTime": "08:00", "allowedEndTime": "18:00" },
+          { "dayOfWeek": "THURSDAY", "allowedStartTime": "08:00", "allowedEndTime": "18:00" },
+          { "dayOfWeek": "FRIDAY", "allowedStartTime": "08:00", "allowedEndTime": "18:00" }
+        ]
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Substitui a grade semanal de horários permitidos de um colaborador.

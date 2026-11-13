@@ -1,0 +1,30 @@
+info:
+  name: Atualizar Configuração de Sessão
+  type: http
+  seq: 7
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/settings/sessions"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "defaultDurationMinutes": 15,
+        "startGraceMinutes": 5,
+        "maxAdvanceDays": 7,
+        "stabilizationMinutes": 5,
+        "sessionQuotaLimit": 1,
+        "sessionQuotaPeriod": "DAY"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza os parâmetros de agendamento e sessão da empresa (`sessionQuotaPeriod`: `ACTIVE`, `DAY`, `WEEK`, `MONTH`).

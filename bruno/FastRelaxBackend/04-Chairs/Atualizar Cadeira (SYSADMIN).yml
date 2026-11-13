@@ -1,0 +1,29 @@
+info:
+  name: Atualizar Cadeira (SYSADMIN)
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/chairs/{{chairId}}"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Cadeira 01 - Sala Relax",
+        "macAddress": "{{chairMacAddress}}",
+        "companyId": {{companyId}},
+        "ipAddress": "192.168.1.150",
+        "port": 80
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza os dados físicos da cadeira (`SYSADMIN`).

@@ -1,0 +1,19 @@
+info:
+  name: Enviar Config MQTT para Cadeira (SYSADMIN)
+  type: http
+  seq: 12
+
+http:
+  method: POST
+  url: "{{baseUrl}}/chairs/{{chairId}}/mqtt"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Grava host, porta, usuário e senha do broker MQTT na NVS do ESP32.

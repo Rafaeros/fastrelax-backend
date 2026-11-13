@@ -1,0 +1,36 @@
+info:
+  name: Atualizar Empresa (SYSADMIN)
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/companies/{{companyId}}"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "cnpj": "11222333000181",
+        "slug": "acme",
+        "name": "Acme Tecnologia Ltda",
+        "email": "contato@acme.com.br",
+        "phone": "11999998888",
+        "address": {
+          "cityId": {{cityId}},
+          "cep": "01310100",
+          "street": "Avenida Paulista",
+          "number": "1000",
+          "complement": "Conjunto 101"
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza os dados cadastrais e endereço de uma empresa.

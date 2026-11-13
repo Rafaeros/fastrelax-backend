@@ -1,0 +1,26 @@
+info:
+  name: Atualizar Usuário
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/{{userId}}"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Gestor Atualizado",
+        "email": "{{companyAdminEmail}}"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza nome e e-mail de um usuário.

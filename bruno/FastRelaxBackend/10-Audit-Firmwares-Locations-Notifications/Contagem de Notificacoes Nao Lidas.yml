@@ -1,0 +1,19 @@
+info:
+  name: Contagem de Notificações Não Lidas
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{baseUrl}}/notifications/unread-count"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Retorna a quantidade de notificações não lidas.

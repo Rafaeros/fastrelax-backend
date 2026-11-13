@@ -1,0 +1,19 @@
+info:
+  name: Resumo de Avaliações (RH)
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/evaluations/summary"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Média, taxa de resposta e distribuição de notas (1 a 5).

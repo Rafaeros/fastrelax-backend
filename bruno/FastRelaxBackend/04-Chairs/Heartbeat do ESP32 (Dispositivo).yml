@@ -1,0 +1,36 @@
+info:
+  name: Heartbeat do ESP32 (Dispositivo)
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/chairs/heartbeat"
+  headers:
+    - name: X-Device-Token
+      value: "{{deviceToken}}"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "macAddress": "{{chairMacAddress}}",
+        "ipAddress": "192.168.1.150",
+        "port": 80,
+        "phase": "idle",
+        "remainingSeconds": 0,
+        "ssid": "Corporativo-IoT",
+        "bssid": "AA:BB:CC:11:22:33",
+        "provisioned": true
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Simula a batida periódica enviada pelo ESP32. No primeiro contato pareia o `X-Device-Token`; nos seguintes reconcilia o estado `active` do relé de corte de energia.

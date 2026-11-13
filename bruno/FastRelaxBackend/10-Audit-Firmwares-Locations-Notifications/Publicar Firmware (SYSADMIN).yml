@@ -1,0 +1,37 @@
+info:
+  name: Publicar Firmware (SYSADMIN)
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/firmwares"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "productName": "FastRelax Controller ESP32",
+        "version": "1.2.0",
+        "releaseNotes": "Suporte a TLS no MQTT e controle de relé de corte de energia NC.",
+        "releaseDate": "2026-11-11"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("firmwareId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Publica uma nova versão de firmware no catálogo (`SYSADMIN`).

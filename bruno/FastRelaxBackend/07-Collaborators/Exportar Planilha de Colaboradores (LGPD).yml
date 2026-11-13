@@ -1,0 +1,19 @@
+info:
+  name: Exportar Planilha de Colaboradores (LGPD)
+  type: http
+  seq: 14
+
+http:
+  method: GET
+  url: "{{baseUrl}}/imports/collaborators/export?onlyActive=false"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Exporta os colaboradores da empresa em `.xlsx` (liberado ao `COMPANY_ADMIN` mesmo durante suspensão financeira, e registrado no `audit_logs`).

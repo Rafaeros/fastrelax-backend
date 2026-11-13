@@ -1,0 +1,19 @@
+info:
+  name: Listar Avaliações
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/evaluations?page=0&size=10"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista as avaliações das sessões.

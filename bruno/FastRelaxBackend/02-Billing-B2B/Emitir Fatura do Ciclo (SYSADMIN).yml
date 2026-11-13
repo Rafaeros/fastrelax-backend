@@ -1,0 +1,37 @@
+info:
+  name: Emitir Fatura do Ciclo (SYSADMIN)
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/invoices/company/{{companyId}}/generate"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "dueDate": "2026-11-20",
+        "includeSetup": false,
+        "description": "Mensalidade B2B — Competência 11/2026"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("invoiceId", String(body.data.id));
+          bru.setVar("invoiceId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Mede os colaboradores ativos e cadeiras ativas da empresa, calcula a faixa/excedente, gera a cobrança no gateway (ou Sandbox local) com QR Code Pix e salva automaticamente o `invoiceId` no Bruno.

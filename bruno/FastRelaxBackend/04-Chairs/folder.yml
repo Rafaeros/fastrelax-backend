@@ -1,0 +1,12 @@
+info:
+  name: 04 - Cadeiras (ESP32)
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Cadastro físico de cadeiras, heartbeat do ESP32, teste de relé, push de rede Wi-Fi/MQTT e ativação/desativação técnica com registro de motivo em `audit_logs`.
+  type: text/markdown

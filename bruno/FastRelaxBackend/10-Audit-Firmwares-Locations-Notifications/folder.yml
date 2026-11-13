@@ -1,0 +1,12 @@
+info:
+  name: 10 - Auditoria, Firmwares, Localidades e Notificações
+  type: folder
+  seq: 10
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Trilha de auditoria (`audit_logs`), catálogo de firmwares ESP32, estados/cidades IBGE e central de notificações.
+  type: text/markdown

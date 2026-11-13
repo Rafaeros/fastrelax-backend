@@ -1,0 +1,34 @@
+info:
+  name: Atualizar Plano (SYSADMIN)
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/billing/plans/{{planId}}"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Faixa 1 — Até 50 colaboradores",
+        "description": "Franquia com 1 cadeira inclusa e suporte completo.",
+        "minCollaborators": 1,
+        "maxCollaborators": 50,
+        "monthlyPriceCents": 49000,
+        "includedChairs": 1,
+        "extraChairPriceCents": 19000,
+        "setupFeePerChairCents": 35000,
+        "graceDays": 5,
+        "active": true
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza uma faixa de plano comercial.

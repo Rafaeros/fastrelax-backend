@@ -1,0 +1,19 @@
+info:
+  name: Baixar Modelo de Planilha (.xlsx)
+  type: http
+  seq: 15
+
+http:
+  method: GET
+  url: "{{baseUrl}}/imports/collaborators/template"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Baixa o modelo `.xlsx` em branco para importação de colaboradores.

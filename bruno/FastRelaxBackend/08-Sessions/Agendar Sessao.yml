@@ -1,0 +1,37 @@
+info:
+  name: Agendar Sessão
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/collaborators/sessions"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "collaboratorId": {{collaboratorId}},
+        "chairId": {{chairId}},
+        "sessionDate": "2026-11-12",
+        "startTime": "14:00"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("sessionId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Agenda uma sessão de massagem e salva `sessionId` no Bruno. Se a empresa estiver `SUSPENDED`, é recusado porque `chair.canUse()` verifica `company.isOperational()`.

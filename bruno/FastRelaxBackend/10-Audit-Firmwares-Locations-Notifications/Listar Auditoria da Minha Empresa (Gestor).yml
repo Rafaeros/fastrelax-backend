@@ -1,0 +1,19 @@
+info:
+  name: Listar Auditoria da Minha Empresa (Gestor)
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/audit-logs/me?page=0&size=20"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista os registros de auditoria da própria empresa (`COMPANY_ADMIN`).

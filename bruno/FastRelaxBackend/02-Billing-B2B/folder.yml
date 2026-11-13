@@ -1,0 +1,12 @@
+info:
+  name: 02 - Cobrança B2B (Planos, Assinaturas e Faturas)
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Rotas do Modelo A — Corporativo (B2B): faixas de planos por colaboradores ativos, assinaturas recorrentes, emissão de faturas com QR Code Pix, simulador de inadimplência/carência (5 dias)/suspensão e webhook do Asaas.
+  type: text/markdown

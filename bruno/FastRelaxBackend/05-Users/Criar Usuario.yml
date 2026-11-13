@@ -1,0 +1,40 @@
+info:
+  name: Criar Usuário
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Gestor da Empresa",
+        "email": "{{companyAdminEmail}}",
+        "role": "COMPANY_ADMIN",
+        "companyId": {{companyId}}
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.user?.id) {
+          bru.setEnvVar("userId", String(body.data.user.id));
+        }
+        if (body?.data?.credential?.temporaryPassword) {
+          bru.setEnvVar("companyAdminPassword", String(body.data.credential.temporaryPassword));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cria um usuário (`SYSADMIN`, `COMPANY_ADMIN`, `COMPANY_RH` ou `COMPANY_OPERATOR`) e já salva a senha temporária gerada em `{{companyAdminPassword}}`.

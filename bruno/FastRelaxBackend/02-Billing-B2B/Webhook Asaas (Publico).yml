@@ -1,0 +1,33 @@
+info:
+  name: Webhook Asaas (Público)
+  type: http
+  seq: 18
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/webhooks/asaas"
+  headers:
+    - name: asaas-access-token
+      value: "{{asaasWebhookSecret}}"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "id": "evt_sandbox_0001",
+        "event": "PAYMENT_CONFIRMED",
+        "payment": {
+          "id": "pay_sandbox_1"
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Endpoint receptor de webhooks do Asaas. Registra `id` em `webhook_events` para idempotência e reconsulta o status na API do gateway antes de alterar a fatura.

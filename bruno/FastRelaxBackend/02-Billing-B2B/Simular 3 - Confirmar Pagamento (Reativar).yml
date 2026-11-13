@@ -1,0 +1,25 @@
+info:
+  name: Simular 3 - Confirmar Pagamento (Reativar)
+  type: http
+  seq: 16
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/invoices/{{invoiceId}}/simulate"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "action": "CONFIRM_PAYMENT"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Simula a confirmação de pagamento (baixa da fatura para `PAID`) e restaura imediatamente `company.billingStatus = ACTIVE`.

@@ -1,0 +1,29 @@
+info:
+  name: Salvar Assinatura da Empresa (SYSADMIN)
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/subscriptions"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "companyId": {{companyId}},
+        "planId": {{planId}},
+        "billingType": "PIX",
+        "nextDueDate": "2026-12-10",
+        "autoSelectTier": true
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cria ou atualiza a assinatura recorrente de uma empresa. Quando `autoSelectTier: true` e `planId: null`, seleciona automaticamente a faixa conforme o total de colaboradores ativos.

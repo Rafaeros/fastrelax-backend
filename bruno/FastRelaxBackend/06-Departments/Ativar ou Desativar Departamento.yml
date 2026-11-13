@@ -1,0 +1,19 @@
+info:
+  name: Ativar ou Desativar Departamento
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/departments/{{departmentId}}/toggle-active"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Alterna a situação ativa/inativa do departamento.

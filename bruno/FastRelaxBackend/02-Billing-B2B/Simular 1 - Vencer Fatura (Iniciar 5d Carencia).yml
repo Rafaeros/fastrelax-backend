@@ -1,0 +1,25 @@
+info:
+  name: Simular 1 - Vencer Fatura (Iniciar 5d Carência)
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/invoices/{{invoiceId}}/simulate"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "action": "MARK_OVERDUE"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Marca a fatura como `OVERDUE` e coloca a empresa em `PAST_DUE` com 5 dias de carência (`grace_until`). Durante os 5 dias a operação continua funcionando normalmente com aviso no painel.

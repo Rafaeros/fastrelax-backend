@@ -1,0 +1,12 @@
+info:
+  name: 07 - Colaboradores e LGPD
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Gestão de colaboradores da empresa, horários permitidos, importação/exportação `.xlsx` e anonimização irreversível de dados pessoais (LGPD).
+  type: text/markdown

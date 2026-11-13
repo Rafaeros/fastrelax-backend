@@ -1,0 +1,12 @@
+info:
+  name: 05 - Usuários do Painel
+  type: folder
+  seq: 5
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Contas com acesso ao painel (`SYSADMIN`, `COMPANY_ADMIN`, `COMPANY_RH`, `COMPANY_OPERATOR`).
+  type: text/markdown

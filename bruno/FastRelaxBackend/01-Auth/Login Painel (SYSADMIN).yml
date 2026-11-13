@@ -1,0 +1,51 @@
+info:
+  name: Login Painel (SYSADMIN)
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{sysadminEmail}}",
+        "password": "{{sysadminPassword}}"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        const token = body?.data?.token || body?.data?.accessToken;
+        const refresh = body?.data?.refreshToken;
+        if (token) {
+          bru.setEnvVar("accessToken", token);
+          bru.setVar("accessToken", token);
+        }
+        if (refresh) {
+          bru.setEnvVar("refreshToken", refresh);
+          bru.setVar("refreshToken", refresh);
+        }
+        if (body?.data?.collaboratorId) {
+          bru.setEnvVar("collaboratorId", String(body.data.collaboratorId));
+        }
+        if (body?.data?.companyId) {
+          bru.setEnvVar("companyId", String(body.data.companyId));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Auth / Login Painel (SYSADMIN)**
+  - **Rota:** `POST /auth/login`
+  - **Automação:** Ao retornar `200 OK`, o script `after-response` salva automaticamente `data.token` em `{{accessToken}}` e `data.refreshToken` em `{{refreshToken}}`.

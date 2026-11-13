@@ -1,0 +1,26 @@
+info:
+  name: Esqueci Senha (Painel)
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/password/forgot"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{companyAdminEmail}}"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Dispara link de recuperação de senha para usuário do painel.

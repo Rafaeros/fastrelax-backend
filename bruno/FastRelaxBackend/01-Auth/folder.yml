@@ -1,0 +1,12 @@
+info:
+  name: 01 - Autenticação e Senha
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Rotas públicas de login (Painel e Colaborador), renovação de token e recuperação de senha. Os endpoints de Login já salvam automaticamente o `accessToken` e o `refreshToken` nas variáveis de ambiente do Bruno.
+  type: text/markdown

@@ -1,0 +1,19 @@
+info:
+  name: Minhas Faturas (Empresa)
+  type: http
+  seq: 12
+
+http:
+  method: GET
+  url: "{{baseUrl}}/billing/invoices/me?page=0&size=20"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista as faturas da própria empresa (acessível ao `COMPANY_ADMIN` mesmo quando a empresa está em `SUSPENDED`).

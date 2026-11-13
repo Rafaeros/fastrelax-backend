@@ -1,0 +1,19 @@
+info:
+  name: Listar Estados (UFs)
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/locations/states"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista todas as unidades federativas do Brasil.

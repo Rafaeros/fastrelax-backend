@@ -1,0 +1,26 @@
+info:
+  name: Definir Senha Primeiro Acesso (Colaborador)
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/collaborators/me/first-access-password"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "newPassword": "SenhaColab123",
+        "confirmNewPassword": "SenhaColab123"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Define a senha definitiva no primeiro acesso do colaborador.

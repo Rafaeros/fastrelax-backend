@@ -1,0 +1,28 @@
+info:
+  name: Redefinir Senha com Token
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/password/reset"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "token": "COLE_O_TOKEN_DO_EMAIL",
+        "newPassword": "NovaSenhaForte123",
+        "confirmNewPassword": "NovaSenhaForte123"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Define a nova senha usando o token recebido por e-mail.

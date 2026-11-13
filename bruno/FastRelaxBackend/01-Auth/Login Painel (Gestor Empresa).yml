@@ -1,0 +1,51 @@
+info:
+  name: Login Painel (Gestor Empresa)
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{companyAdminEmail}}",
+        "password": "{{companyAdminPassword}}"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        const token = body?.data?.token || body?.data?.accessToken;
+        const refresh = body?.data?.refreshToken;
+        if (token) {
+          bru.setEnvVar("accessToken", token);
+          bru.setVar("accessToken", token);
+        }
+        if (refresh) {
+          bru.setEnvVar("refreshToken", refresh);
+          bru.setVar("refreshToken", refresh);
+        }
+        if (body?.data?.collaboratorId) {
+          bru.setEnvVar("collaboratorId", String(body.data.collaboratorId));
+        }
+        if (body?.data?.companyId) {
+          bru.setEnvVar("companyId", String(body.data.companyId));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Auth / Login Painel (Gestor/RH da Empresa)**
+  - **Rota:** `POST /auth/login`
+  - **Automação:** Salva automaticamente o JWT em `{{accessToken}}` e o refresh token em `{{refreshToken}}`.

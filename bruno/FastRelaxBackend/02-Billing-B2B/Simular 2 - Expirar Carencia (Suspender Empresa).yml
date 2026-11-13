@@ -1,0 +1,25 @@
+info:
+  name: Simular 2 - Expirar Carência (Suspender Empresa)
+  type: http
+  seq: 15
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/invoices/{{invoiceId}}/simulate"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "action": "EXPIRE_GRACE_PERIOD"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Expira o prazo de 5 dias de carência e muda a empresa para `SUSPENDED`. Colaboradores e RH perdem acesso imediatamente; `COMPANY_ADMIN` só acessa `/billing/**` e exportação LGPD; `chairs.active` permanece `true` (relé NC fechado para uso manual pelo botão físico).

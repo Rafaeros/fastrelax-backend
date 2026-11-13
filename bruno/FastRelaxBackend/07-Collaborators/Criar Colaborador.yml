@@ -1,0 +1,41 @@
+info:
+  name: Criar Colaborador
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/collaborators"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "departmentId": {{departmentId}},
+        "name": "Maria dos Santos Silva",
+        "cpf": "{{collaboratorCpf}}",
+        "phoneNumber": "11988887777",
+        "email": "maria.silva@acme.com.br"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.collaborator?.id) {
+          bru.setEnvVar("collaboratorId", String(body.data.collaborator.id));
+        }
+        if (body?.data?.credential?.temporaryPassword) {
+          bru.setEnvVar("collaboratorPassword", String(body.data.credential.temporaryPassword));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cadastra um colaborador e salva automaticamente `collaboratorId` e a senha temporária em `{{collaboratorPassword}}`.

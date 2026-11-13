@@ -1,0 +1,12 @@
+info:
+  name: 03 - Empresas
+  type: folder
+  seq: 3
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Gestão de empresas clientes pela Physical (`SYSADMIN`) e autoatendimento da própria empresa (`/companies/me` e `/companies/me/wifi`).
+  type: text/markdown

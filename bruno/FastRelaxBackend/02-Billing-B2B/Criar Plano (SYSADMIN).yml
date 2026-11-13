@@ -1,0 +1,43 @@
+info:
+  name: Criar Plano (SYSADMIN)
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/plans"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Faixa 1 — Até 50 colaboradores",
+        "description": "Franquia com 1 cadeira inclusa e suporte completo.",
+        "minCollaborators": 1,
+        "maxCollaborators": 50,
+        "monthlyPriceCents": 49000,
+        "includedChairs": 1,
+        "extraChairPriceCents": 19000,
+        "setupFeePerChairCents": 35000,
+        "graceDays": 5,
+        "active": true
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("planId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cria uma nova faixa de plano comercial B2B.

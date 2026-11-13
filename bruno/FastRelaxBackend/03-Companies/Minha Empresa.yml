@@ -1,0 +1,19 @@
+info:
+  name: Minha Empresa
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/companies/me"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Dados cadastrais, status financeiro (`billingStatus`, `graceUntil`) e slug de login da própria empresa.

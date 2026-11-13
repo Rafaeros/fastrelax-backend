@@ -1,0 +1,19 @@
+info:
+  name: Listar Minhas Notificações
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{baseUrl}}/notifications?page=0&size=20"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista as notificações do colaborador logado.

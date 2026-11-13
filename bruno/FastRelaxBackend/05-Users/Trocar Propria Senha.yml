@@ -1,0 +1,27 @@
+info:
+  name: Trocar Própria Senha
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/me/password"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "currentPassword": "{{companyAdminPassword}}",
+        "newPassword": "NovaSenhaForte123",
+        "confirmNewPassword": "NovaSenhaForte123"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Altera a própria senha do usuário logado.

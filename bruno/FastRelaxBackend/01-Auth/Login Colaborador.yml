@@ -1,0 +1,52 @@
+info:
+  name: Login Colaborador
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/collaborator/login"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "companySlug": "{{companySlug}}",
+        "cpf": "{{collaboratorCpf}}",
+        "password": "{{collaboratorPassword}}"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        const token = body?.data?.token || body?.data?.accessToken;
+        const refresh = body?.data?.refreshToken;
+        if (token) {
+          bru.setEnvVar("accessToken", token);
+          bru.setVar("accessToken", token);
+        }
+        if (refresh) {
+          bru.setEnvVar("refreshToken", refresh);
+          bru.setVar("refreshToken", refresh);
+        }
+        if (body?.data?.collaboratorId) {
+          bru.setEnvVar("collaboratorId", String(body.data.collaboratorId));
+        }
+        if (body?.data?.companyId) {
+          bru.setEnvVar("companyId", String(body.data.companyId));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Auth / Login Colaborador**
+  - **Rota:** `POST /auth/collaborator/login`
+  - **Automação:** Salva automaticamente `data.token` em `{{accessToken}}`, `data.refreshToken` em `{{refreshToken}}`, `data.collaboratorId` em `{{collaboratorId}}` e `data.companyId` em `{{companyId}}`.

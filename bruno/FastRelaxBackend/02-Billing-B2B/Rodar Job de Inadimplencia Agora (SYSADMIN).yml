@@ -1,0 +1,19 @@
+info:
+  name: Rodar Job de Inadimplência Agora (SYSADMIN)
+  type: http
+  seq: 17
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/lifecycle/sweep"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Executa imediatamente a varredura diária de faturas vencidas (`PENDING -> OVERDUE`) e de carências expiradas (`PAST_DUE -> SUSPENDED`).

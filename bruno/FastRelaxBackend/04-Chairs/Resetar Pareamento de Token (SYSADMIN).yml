@@ -1,0 +1,19 @@
+info:
+  name: Resetar Pareamento de Token (SYSADMIN)
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/chairs/{{chairId}}/reset-pairing"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Esquece o `device_token_encrypted` para que a cadeira possa parear novamente no próximo heartbeat após limpeza total da NVS.

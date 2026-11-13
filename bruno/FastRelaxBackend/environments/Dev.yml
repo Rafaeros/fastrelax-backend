@@ -1,0 +1,83 @@
+name: Dev
+variables:
+  - name: baseUrl
+    value: http://localhost:8091/api/v1
+    description: URL base da API FastRelax (context-path /api/v1)
+  - name: sysadminEmail
+    value: admin@fastrelax.com
+    description: E-mail do administrador da plataforma (SYSADMIN)
+  - name: companyAdminEmail
+    value: gestor@empresa.com
+    description: E-mail do gestor da empresa cliente (COMPANY_ADMIN)
+  - name: companySlug
+    value: acme
+    description: Slug da empresa usado no login do colaborador
+  - name: collaboratorCpf
+    value: "12345678909"
+    description: CPF do colaborador (11 dígitos sem máscara)
+  - name: companyId
+    value: "1"
+    description: ID da empresa cliente
+  - name: planId
+    value: "1"
+    description: ID da faixa de plano comercial (1 a 4 no seed inicial)
+  - name: invoiceId
+    value: "1"
+    description: ID da fatura para simulação/consulta
+  - name: chairId
+    value: "1"
+    description: ID da cadeira (ESP32)
+  - name: chairMacAddress
+    value: "AA:BB:CC:DD:EE:01"
+    description: MAC address da cadeira para testes de heartbeat
+  - name: departmentId
+    value: "1"
+    description: ID do departamento da empresa
+  - name: collaboratorId
+    value: "1"
+    description: ID do colaborador
+  - name: scheduleId
+    value: "1"
+    description: ID do horário permitido
+  - name: sessionId
+    value: "1"
+    description: ID da sessão de massagem
+  - name: userId
+    value: "1"
+    description: ID de usuário do painel
+  - name: firmwareId
+    value: "1"
+    description: ID da versão de firmware
+  - name: firmwareFileId
+    value: "1"
+    description: ID do binário anexado ao firmware
+  - name: stateId
+    value: "25"
+    description: ID da UF (ex. 25 = SP)
+  - name: cityId
+    value: "1"
+    description: ID do município cadastrado
+  - name: notificationId
+    value: "1"
+    description: ID da notificação
+  - secret: true
+    name: sysadminPassword
+    description: Senha do SYSADMIN (Preencha na aba Secrets do Bruno)
+  - secret: true
+    name: companyAdminPassword
+    description: Senha do Gestor/RH da empresa (Preencha na aba Secrets)
+  - secret: true
+    name: collaboratorPassword
+    description: Senha do Colaborador (Preencha na aba Secrets)
+  - secret: true
+    name: accessToken
+    description: Preenchido AUTOMATICAMENTE ao executar Login Painel, Login Colaborador ou Refresh Token
+  - secret: true
+    name: refreshToken
+    description: Preenchido AUTOMATICAMENTE ao executar Login Painel, Login Colaborador ou Refresh Token
+  - secret: true
+    name: deviceToken
+    description: Token X-Device-Token gerado pelo ESP32 no pareamento
+  - secret: true
+    name: asaasWebhookSecret
+    description: Segredo do header asaas-access-token para testar POST /billing/webhooks/asaas

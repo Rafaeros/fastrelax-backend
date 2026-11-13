@@ -1,0 +1,27 @@
+info:
+  name: Registrar Avaliação
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/evaluations"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "sessionId": {{sessionId}},
+        "score": 5,
+        "comments": "Excelente massagem!"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Registra a avaliação (1 a 5 estrelas) de uma sessão concluída.

@@ -1,0 +1,48 @@
+info:
+  name: Criar Empresa (SYSADMIN)
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/companies"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "cnpj": "11222333000181",
+        "slug": "acme",
+        "name": "Acme Tecnologia Ltda",
+        "email": "contato@acme.com.br",
+        "phone": "11999998888",
+        "address": {
+          "cityId": {{cityId}},
+          "cep": "01310100",
+          "street": "Avenida Paulista",
+          "number": "1000",
+          "complement": "Conjunto 101"
+        }
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("companyId", String(body.data.id));
+        }
+        if (body?.data?.slug) {
+          bru.setEnvVar("companySlug", String(body.data.slug));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cadastra uma nova empresa cliente e salva `companyId` e `companySlug` no ambiente do Bruno.

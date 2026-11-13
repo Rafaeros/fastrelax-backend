@@ -1,0 +1,12 @@
+info:
+  name: 06 - Departamentos
+  type: folder
+  seq: 6
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Departamentos da empresa cliente para agrupamento de colaboradores e indicadores.
+  type: text/markdown

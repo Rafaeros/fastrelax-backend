@@ -1,0 +1,19 @@
+info:
+  name: Ativar ou Desativar Colaborador
+  type: http
+  seq: 12
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/collaborators/{{collaboratorId}}/toggle-active"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Ativa ou desativa o colaborador (impacta a medição de colaboradores ativos no fechamento do ciclo B2B).

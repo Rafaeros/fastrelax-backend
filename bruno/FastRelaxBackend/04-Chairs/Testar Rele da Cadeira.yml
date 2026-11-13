@@ -1,0 +1,19 @@
+info:
+  name: Testar Relé da Cadeira
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/chairs/{{chairId}}/relay-test?durationSeconds=10"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Aciona o relé de sessão por alguns segundos para testar a instalação física (`SYSADMIN` ou `COMPANY_ADMIN`).

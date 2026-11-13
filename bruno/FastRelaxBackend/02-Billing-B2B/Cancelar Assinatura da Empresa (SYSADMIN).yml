@@ -1,0 +1,19 @@
+info:
+  name: Cancelar Assinatura da Empresa (SYSADMIN)
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: "{{baseUrl}}/billing/subscriptions/company/{{companyId}}/cancel"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cancela a assinatura recorrente de uma empresa.

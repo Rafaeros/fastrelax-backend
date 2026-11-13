@@ -1,0 +1,27 @@
+info:
+  name: Esqueci Senha (Colaborador)
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/password/collaborator/forgot"
+  auth:
+    type: none
+  body:
+    type: json
+    data: |-
+      {
+        "companySlug": "{{companySlug}}",
+        "email": "colaborador@empresa.com"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  Dispara link de recuperação de senha para colaborador (exige `companySlug` + `email`).

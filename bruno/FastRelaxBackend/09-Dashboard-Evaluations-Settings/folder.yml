@@ -1,0 +1,12 @@
+info:
+  name: 09 - Dashboard, Avaliações e Configurações
+  type: folder
+  seq: 9
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    Indicadores do painel de RH, avaliações das massagens e configuração de duração/tolerância/cotas de sessão.
+  type: text/markdown

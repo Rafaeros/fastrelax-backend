@@ -1,0 +1,19 @@
+info:
+  name: Listar Auditoria Global (SYSADMIN)
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/audit-logs?page=0&size=20"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista os registros do `audit_logs` de toda a plataforma (ativação/desativação de cadeira com motivo, mudanças de cobrança, anonimizações LGPD, exportações).

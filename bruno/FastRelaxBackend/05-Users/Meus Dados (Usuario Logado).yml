@@ -1,0 +1,19 @@
+info:
+  name: Meus Dados (Usuário Logado)
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/me"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Retorna os dados do usuário logado no painel, incluindo `companyBillingStatus` e `companyGraceUntil`.

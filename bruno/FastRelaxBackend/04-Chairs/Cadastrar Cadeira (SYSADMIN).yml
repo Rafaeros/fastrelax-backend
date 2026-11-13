@@ -1,0 +1,38 @@
+info:
+  name: Cadastrar Cadeira (SYSADMIN)
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/chairs"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Cadeira 01 - Sala Relax",
+        "macAddress": "{{chairMacAddress}}",
+        "companyId": {{companyId}},
+        "ipAddress": "192.168.1.150",
+        "port": 80
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody ? res.getBody() : res.body;
+        if (body?.data?.id) {
+          bru.setEnvVar("chairId", String(body.data.id));
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cadastra uma nova cadeira pelo MAC address do ESP32 (`SYSADMIN`).

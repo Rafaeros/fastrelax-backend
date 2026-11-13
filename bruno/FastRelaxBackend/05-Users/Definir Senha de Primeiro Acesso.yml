@@ -1,0 +1,26 @@
+info:
+  name: Definir Senha de Primeiro Acesso
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users/me/first-access-password"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "newPassword": "SenhaDefinitiva123",
+        "confirmNewPassword": "SenhaDefinitiva123"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Troca a senha temporária de primeiro acesso e libera o uso das demais rotas da API.

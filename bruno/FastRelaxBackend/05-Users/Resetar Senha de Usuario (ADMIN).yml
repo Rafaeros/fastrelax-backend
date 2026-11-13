@@ -1,0 +1,19 @@
+info:
+  name: Resetar Senha de Usuário (ADMIN)
+  type: http
+  seq: 8
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/{{userId}}/password"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Gera uma nova senha temporária para outro usuário.
