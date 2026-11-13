@@ -8,14 +8,14 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-fastrelax}
-      POSTGRES_USER: ${POSTGRES_USER:-fastrelax}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fastrelax123}
+      POSTGRES_USER: ${DB_USER:-fastrelax}
+      POSTGRES_PASSWORD: ${DB_PASS:-fastrelax}
     volumes:
       - fastrelax-db-dev-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432" # Aberto para DBeaver / DataGrip
+      - "${DB_PORT:-5433}:5432" # 5433 no host para não conflitar com o Postgres local na 5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fastrelax}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fastrelax}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -29,14 +29,14 @@ services:
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${MQTT_USERNAME:-fastrelax}
-      RABBITMQ_DEFAULT_PASS: ${MQTT_PASSWORD:-fastrelax123}
+      RABBITMQ_DEFAULT_PASS: ${MQTT_PASSWORD:-fastrelax}
     volumes:
       - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
       - fastrelax-rabbitmq-dev-data:/var/lib/rabbitmq
     ports:
-      - "5672:5672"   # AMQP (Spring Boot local fala aqui)
-      - "1883:1883"   # MQTT (ESP32 de teste fala aqui)
-      - "15672:15672" # Painel Web (http://localhost:15672)
+      - "${RABBITMQ_AMQP_PORT:-5673}:5672"   # AMQP (5673 no host para não conflitar com lanx-rabbitmq)
+      - "${MQTT_DEVICE_PORT:-1883}:1883"     # MQTT (ESP32 de teste fala aqui)
+      - "15673:15672"                        # Painel Web (http://localhost:15673)
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
       interval: 10s
